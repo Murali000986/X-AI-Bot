@@ -8,7 +8,8 @@
   <img src="https://img.shields.io/badge/MongoDB-7.x-green?style=flat-square&logo=mongodb" />
 </p>
 
-A production-ready, full-stack AI chatbot platform for X (Twitter). The bot listens to mentions, classifies intent using an LLM-based router, delegates to one of five specialized AI agents, and replies natively on X — all managed via a professional admin dashboard.
+A production-ready, full-stack AI chatbot platfo
+rm for X (Twitter). The bot listens to mentions, classifies intent using an LLM-based router, delegates to one of five specialized AI agents, and replies natively on X — all managed via a professional admin dashboard.
 
 ---
 
