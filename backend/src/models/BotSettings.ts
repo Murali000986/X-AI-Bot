@@ -11,6 +11,20 @@ export interface IBotSettings extends Document {
   maxResponseLength: number;
   rateLimit: number; // requests per minute per user
   autoReplyEnabled: boolean;
+  welcomeMessage?: string;
+  
+  // API Keys
+  openaiKey?: string;
+  geminiKey?: string;
+  groqKey?: string;
+  
+  // X Credentials
+  xBotUsername?: string;
+  xAppKey?: string;
+  xAppSecret?: string;
+  xAccessToken?: string;
+  xAccessSecret?: string;
+  xBearerToken?: string;
 }
 
 const BotSettingsSchema = new Schema<IBotSettings>({
@@ -28,6 +42,16 @@ const BotSettingsSchema = new Schema<IBotSettings>({
   maxResponseLength: { type: Number, default: 280 },
   rateLimit: { type: Number, default: 5 },
   autoReplyEnabled: { type: Boolean, default: true },
+  welcomeMessage: { type: String, default: "Hi! I'm your X AI assistant. How can I help?" },
+  openaiKey: { type: String },
+  geminiKey: { type: String },
+  groqKey: { type: String },
+  xBotUsername: { type: String },
+  xAppKey: { type: String },
+  xAppSecret: { type: String },
+  xAccessToken: { type: String },
+  xAccessSecret: { type: String },
+  xBearerToken: { type: String },
 });
 
 export const BotSettings = mongoose.model<IBotSettings>('BotSettings', BotSettingsSchema);

@@ -2,27 +2,32 @@ import { TwitterApi } from 'twitter-api-v2';
 import { XProvider, Tweet, XUser } from './XProvider';
 import { env } from '../../config/env';
 import { logger } from '../../utils/logger';
+import { getSettings } from '../../models/BotSettings';
 
 export class XApiProvider implements XProvider {
-  private readClient: TwitterApi;
-  private writeClient: TwitterApi;
 
-  constructor() {
-    // Bearer token for reading (v2 app-auth)
-    this.readClient = new TwitterApi(env.X_BEARER_TOKEN ?? '');
+  private async getClients() {
+    const settings = await getSettings();
+    const bearer = settings.xBearerToken || env.X_BEARER_TOKEN || '';
+    const appKey = settings.xAppKey || env.X_CLIENT_ID || '';
+    const appSecret = settings.xAppSecret || env.X_CLIENT_SECRET || '';
+    const accessToken = settings.xAccessToken || env.X_ACCESS_TOKEN || '';
+    const accessSecret = settings.xAccessSecret || env.X_ACCESS_SECRET || '';
 
-    // OAuth 1.0a user-context for writing replies
-    this.writeClient = new TwitterApi({
-      appKey: env.X_CLIENT_ID ?? '',
-      appSecret: env.X_CLIENT_SECRET ?? '',
-      accessToken: env.X_ACCESS_TOKEN ?? '',
-      accessSecret: env.X_ACCESS_SECRET ?? '',
+    const readClient = new TwitterApi(bearer);
+    const writeClient = new TwitterApi({
+      appKey,
+      appSecret,
+      accessToken,
+      accessSecret,
     });
+    return { readClient, writeClient };
   }
 
   async authenticate(): Promise<void> {
     try {
-      const me = await this.writeClient.v2.me();
+      const { writeClient } = await this.getClients();
+      const me = await writeClient.v2.me();
       logger.info(`X authenticated as @${me.data.username}`);
     } catch (err) {
       logger.error('X authentication failed:', err);
@@ -32,7 +37,8 @@ export class XApiProvider implements XProvider {
 
   async getMentions(sinceId?: string): Promise<Tweet[]> {
     try {
-      const me = await this.writeClient.v2.me();
+      const { readClient, writeClient } = await this.getClients();
+      const me = await writeClient.v2.me();
       const params: Record<string, unknown> = {
         'tweet.fields': ['author_id', 'text', 'referenced_tweets', 'in_reply_to_user_id'],
         'user.fields': ['name', 'username', 'profile_image_url'],
@@ -41,7 +47,7 @@ export class XApiProvider implements XProvider {
       };
       if (sinceId) params.since_id = sinceId;
 
-      const mentions = await this.readClient.v2.userMentionTimeline(me.data.id, params);
+      const mentions = await readClient.v2.userMentionTimeline(me.data.id, params);
       const users: Map<string, { username: string; name: string; profile_image_url?: string }> = new Map();
 
       for (const user of mentions.data.includes?.users ?? []) {
@@ -67,7 +73,8 @@ export class XApiProvider implements XProvider {
   }
 
   async replyToTweet(tweetId: string, text: string): Promise<string> {
-    const reply = await this.writeClient.v2.tweet({
+    const { writeClient } = await this.getClients();
+    const reply = await writeClient.v2.tweet({
       text,
       reply: { in_reply_to_tweet_id: tweetId },
     });
@@ -76,14 +83,15 @@ export class XApiProvider implements XProvider {
   }
 
   async getUser(userId: string): Promise<XUser> {
-    const user = await this.readClient.v2.user(userId, {
+    const { readClient } = await this.getClients();
+    const user = await readClient.v2.user(userId, {
       'user.fields': ['name', 'username', 'profile_image_url'],
     });
     return {
       id: user.data.id,
       username: user.data.username,
       displayName: user.data.name,
-      profileImage: (user.data as Record<string, unknown>)['profile_image_url'] as string | undefined,
+      profileImage: (user.data as any).profile_image_url,
     };
   }
 }

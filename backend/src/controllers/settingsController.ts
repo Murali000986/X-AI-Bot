@@ -14,10 +14,24 @@ const DEFAULT_SETTINGS = {
   autoReplyEnabled: true,
 };
 
+const SENSITIVE_KEYS = [
+  'openaiKey', 'geminiKey', 'groqKey', 
+  'xAppKey', 'xAppSecret', 'xAccessToken', 'xAccessSecret', 'xBearerToken'
+];
+
 export async function getSettingsHandler(_req: Request, res: Response): Promise<void> {
   try {
     const settings = await getSettings();
-    res.json(settings);
+    const obj = settings.toJSON() as any;
+    
+    // Mask sensitive keys
+    for (const key of SENSITIVE_KEYS) {
+      if (obj[key]) {
+        obj[key] = obj[key].substring(0, 3) + '••••••••';
+      }
+    }
+    
+    res.json(obj);
   } catch {
     res.json(DEFAULT_SETTINGS);
   }
@@ -29,14 +43,27 @@ export async function updateSettings(req: Request, res: Response): Promise<void>
     const allowed = [
       'botEnabled', 'defaultModel', 'defaultProvider', 'defaultAgent', 'systemPrompt',
       'temperature', 'maxTokens', 'maxResponseLength', 'rateLimit', 'autoReplyEnabled',
+      'welcomeMessage', 'xBotUsername', ...SENSITIVE_KEYS
     ];
+    
     for (const key of allowed) {
-      if (req.body[key] !== undefined) {
-        (settings as Record<string, unknown>)[key] = req.body[key];
+      const val = req.body[key];
+      if (val !== undefined) {
+        // Skip updates where the frontend just sends back the masked string
+        if (typeof val === 'string' && val.includes('••••••••')) {
+          continue;
+        }
+        (settings as any)[key] = val;
       }
     }
     await settings.save();
-    res.json(settings);
+    
+    // Return masked version
+    const obj = settings.toJSON() as any;
+    for (const key of SENSITIVE_KEYS) {
+      if (obj[key]) obj[key] = obj[key].substring(0, 3) + '••••••••';
+    }
+    res.json(obj);
   } catch {
     res.status(503).json({ error: 'Database unavailable' });
   }

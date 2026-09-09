@@ -1,0 +1,6 @@
+src/controllers/settingsController.ts(56,10): error TS2352: Conversion of type 'IBotSettings' to type 'Record<string, unknown>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Index signature for type 'string' is missing in type 'IBotSettings'.
+src/models/Message.ts(9,18): error TS2430: Interface 'IMessage' incorrectly extends interface 'Document<ObjectId, any, any, Record<string, any>, {}>'.
+  Types of property 'model' are incompatible.
+    Type 'string | undefined' is not assignable to type '{ <ModelType = Model<unknown, {}, {}, {}, Document<unknown, {}, unknown, {}, {}> & { _id: ObjectId; } & { __v: number; }, any>>(name: string): ModelType; <ModelType = Model<any, {}, {}, {}, any, any>>(): ModelType; }'.
+      Type 'undefined' is not assignable to type '{ <ModelType = Model<unknown, {}, {}, {}, Document<unknown, {}, unknown, {}, {}> & { _id: ObjectId; } & { __v: number; }, any>>(name: string): ModelType; <ModelType = Model<any, {}, {}, {}, any, any>>(): ModelType; }'.

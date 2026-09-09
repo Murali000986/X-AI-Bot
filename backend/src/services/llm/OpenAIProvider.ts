@@ -2,27 +2,24 @@ import OpenAI from 'openai';
 import { LLMMessage, LLMOptions, LLMProvider, LLMResponse } from './LLMProvider';
 import { env } from '../../config/env';
 import { logger } from '../../utils/logger';
+import { getSettings } from '../../models/BotSettings';
 
 export class OpenAIProvider implements LLMProvider {
   readonly name = 'openai';
   readonly defaultModel = 'gpt-4o-mini';
-  private client: OpenAI | null = null;
-
-  constructor() {
-    if (env.OPENAI_API_KEY) {
-      this.client = new OpenAI({ apiKey: env.OPENAI_API_KEY });
-    }
-  }
 
   isAvailable(): boolean {
-    return !!env.OPENAI_API_KEY && !!this.client;
+    return true;
   }
 
   async generateResponse(messages: LLMMessage[], opts: LLMOptions = {}): Promise<LLMResponse> {
-    if (!this.client) throw new Error('OpenAI API key not configured');
+    const settings = await getSettings();
+    const key = settings.openaiKey || env.OPENAI_API_KEY;
+    if (!key) throw new Error('OpenAI API key not configured in dashboard or env');
+    const client = new OpenAI({ apiKey: key });
 
     const modelName = opts.model || this.defaultModel;
-    const completion = await this.client.chat.completions.create({
+    const completion = await client.chat.completions.create({
       model: modelName,
       messages: messages.map((m) => ({ role: m.role, content: m.content })),
       temperature: opts.temperature ?? 0.7,

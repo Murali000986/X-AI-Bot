@@ -6,11 +6,16 @@ import { getConversations, getConversation, getMessages } from '../controllers/c
 import { getAnalytics } from '../controllers/analyticsController';
 import { getSettingsHandler, updateSettings } from '../controllers/settingsController';
 import { getAgents, toggleAgent, getModels, testAgent } from '../controllers/agentsController';
+import { getRequests, getRequestStats } from '../controllers/requestsController';
+import { getHealth } from '../controllers/healthController';
 
 const router = Router();
 
 // Public test endpoint (no JWT needed) — tests AI pipeline without DB or X API
 router.post('/test-agent', testAgent);
+
+// Health — no auth required so uptime checkers can hit it
+router.get('/health', getHealth);
 
 // All admin routes require JWT
 router.use(authMiddleware);
@@ -33,6 +38,10 @@ router.get('/messages', getMessages);
 // Analytics
 router.get('/analytics', getAnalytics);
 
+// Requests log
+router.get('/requests', getRequests);
+router.get('/requests/stats', getRequestStats);
+
 // Settings
 router.get('/settings', getSettingsHandler);
 router.put('/settings', updateSettings);
@@ -43,8 +52,5 @@ router.put('/agents/:id', toggleAgent);
 
 // Models
 router.get('/models', getModels);
-
-// Test agent
-router.post('/test-agent', testAgent);
 
 export default router;

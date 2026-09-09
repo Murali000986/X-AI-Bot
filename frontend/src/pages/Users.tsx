@@ -1,85 +1,85 @@
-import React, { useEffect, useState } from 'react';
-import { api, UserList, User } from '../services/api';
+import { useEffect, useState } from 'react';
+import { api } from '../services/api';
 import { useToast } from '../components/Toast';
-import { Ban, CheckCircle2, Search } from 'lucide-react';
+import { UserIcon, Download } from 'lucide-react';
+import PageShell from '../components/PageShell';
+
+interface User { _id: string; username: string; displayName: string; messageCount: number; lastActive: string; }
+
+function exportCSV(users: User[]) {
+  const header = ['Username', 'Display Name', 'Messages', 'Last Active'];
+  const rows   = users.map(u => [u.username, u.displayName, u.messageCount, new Date(u.lastActive).toLocaleDateString()]);
+  const csv    = [header, ...rows].map(r => r.join(',')).join('\n');
+  const blob   = new Blob([csv], { type: 'text/csv' });
+  const url    = URL.createObjectURL(blob);
+  const a      = document.createElement('a');
+  a.href       = url;
+  a.download   = `users-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 export default function Users() {
-  const [data, setData] = useState<UserList | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState<User[]>([]);
   const { toast } = useToast();
 
-  const loadData = () => {
-    setLoading(true);
-    api.getUsers().then(setData).catch(() => toast('Failed to load users', 'error')).finally(() => setLoading(false));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const load = () => {
+    api.getUsers().then((data: { users: User[] }) => setUsers(data.users)).catch(() => toast('Failed to load users', 'error'));
   };
-
-  useEffect(() => { loadData(); }, []);
-
-  const toggleBlock = async (user: User) => {
-    try {
-      if (user.isBlocked) await api.unblockUser(user._id);
-      else await api.blockUser(user._id);
-      toast(`User ${user.isBlocked ? 'unblocked' : 'blocked'}`, 'success');
-      loadData();
-    } catch {
-      toast('Failed to change user status', 'error');
-    }
-  };
+  useEffect(load, []);
 
   return (
-    <div className="p-8 max-w-6xl mx-auto animate-in fade-in">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-100">Users</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage X bot users.</p>
+    <PageShell
+      onRefresh={load}
+      actions={
+        <button onClick={() => exportCSV(users)} disabled={!users.length} className="btn-ghost gap-1.5 text-xs border border-slate-200 rounded-xl shadow-sm">
+          <Download size={14} /> Export CSV
+        </button>
+      }
+    >
+      <div className="max-w-5xl mx-auto">
+        <div className="card overflow-hidden p-0">
+
+          {/* Summary bar */}
+          <div className="px-6 py-3 border-b border-slate-100 flex items-center gap-2 bg-slate-50/60">
+            <UserIcon size={14} className="text-brand-500" />
+            <span className="text-sm font-semibold text-slate-700">{users.length} registered users</span>
+          </div>
+
+          <table className="w-full text-left text-sm">
+            <thead className="bg-slate-50 text-slate-500 text-xs border-b border-slate-100">
+              <tr>
+                <th className="px-6 py-3 font-semibold">User</th>
+                <th className="px-6 py-3 font-semibold">Username</th>
+                <th className="px-6 py-3 font-semibold text-right">Messages</th>
+                <th className="px-6 py-3 font-semibold text-right">Last Active</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {users.length === 0 ? (
+                <tr><td colSpan={4} className="px-6 py-10 text-center text-slate-400">No users yet.</td></tr>
+              ) : users.map(u => (
+                <tr key={u._id} className="hover:bg-slate-50/60 transition-colors">
+                  <td className="px-6 py-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 font-bold text-sm flex-shrink-0">
+                        {(u.displayName || u.username).charAt(0).toUpperCase()}
+                      </div>
+                      <span className="font-semibold text-slate-800">{u.displayName}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-3 text-slate-500">@{u.username}</td>
+                  <td className="px-6 py-3 text-right">
+                    <span className="font-semibold text-slate-800">{u.messageCount}</span>
+                  </td>
+                  <td className="px-6 py-3 text-right text-slate-500">{new Date(u.lastActive).toLocaleDateString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
-
-      <div className="card overflow-hidden p-0">
-        <table className="w-full text-left text-sm">
-          <thead className="bg-gray-800/50 text-gray-400">
-            <tr>
-              <th className="px-6 py-3 font-medium">User</th>
-              <th className="px-6 py-3 font-medium">Messages</th>
-              <th className="px-6 py-3 font-medium">Last Active</th>
-              <th className="px-6 py-3 font-medium">Status</th>
-              <th className="px-6 py-3 font-medium text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-800">
-            {loading ? (
-              <tr><td colSpan={5} className="px-6 py-8 text-center text-gray-500">Loading...</td></tr>
-            ) : data?.users.map((user) => (
-              <tr key={user._id} className="hover:bg-gray-800/20 transition-colors">
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-3">
-                    {user.profileImage ? (
-                      <img src={user.profileImage} alt="" className="w-8 h-8 rounded-full" />
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-gray-800" />
-                    )}
-                    <div>
-                      <div className="font-medium text-gray-200">{user.displayName}</div>
-                      <div className="text-xs text-gray-500">@{user.username}</div>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-gray-300">{user.messageCount}</td>
-                <td className="px-6 py-4 text-gray-400">{new Date(user.lastActive).toLocaleDateString()}</td>
-                <td className="px-6 py-4">
-                  {user.isBlocked ? <span className="badge-red">Blocked</span> : <span className="badge-green">Active</span>}
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <button onClick={() => toggleBlock(user)} className="btn-ghost text-xs px-2 py-1">
-                    {user.isBlocked ? <CheckCircle2 size={14} className="text-emerald-400" /> : <Ban size={14} className="text-red-400" />}
-                    <span>{user.isBlocked ? 'Unblock' : 'Block'}</span>
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    </PageShell>
   );
 }

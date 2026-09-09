@@ -27,21 +27,21 @@ export default function Login() {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center p-4"
-      style={{ background: 'linear-gradient(135deg, #f0f4ff 0%, #fafafa 50%, #f0f9ff 100%)' }}>
+    <div className="fixed inset-0 flex items-center justify-center p-4 bg-slate-50"
+      style={{ background: 'radial-gradient(circle at top right, #f8fafc 0%, #f1f5f9 100%)' }}>
 
       {/* Decorative blobs */}
-      <div className="absolute top-20 left-20 w-72 h-72 bg-brand-100 rounded-full blur-3xl opacity-50 pointer-events-none" />
-      <div className="absolute bottom-20 right-20 w-72 h-72 bg-sky-100 rounded-full blur-3xl opacity-50 pointer-events-none" />
+      <div className="absolute top-20 left-20 w-80 h-80 bg-brand-200 rounded-full blur-[100px] opacity-40 pointer-events-none" />
+      <div className="absolute bottom-20 right-20 w-80 h-80 bg-sky-200 rounded-full blur-[100px] opacity-40 pointer-events-none" />
 
-      <div className="relative w-full max-w-sm bg-white rounded-2xl shadow-xl ring-1 ring-slate-200/60 p-8">
+      <div className="relative w-full max-w-md bg-white/70 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-white p-10">
         {/* Logo */}
-        <div className="flex flex-col items-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-brand-600 flex items-center justify-center mb-4 shadow-lg shadow-brand-200">
-            <Zap size={28} className="text-white" />
+        <div className="flex flex-col items-center mb-10">
+          <div className="w-16 h-16 rounded-2xl bg-brand-600 flex items-center justify-center mb-5 shadow-lg shadow-brand-500/30">
+            <Zap size={32} className="text-slate-900" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900">X AI Dashboard</h1>
-          <p className="text-sm text-slate-500 mt-1">Sign in to manage your bot</p>
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">X AI Dashboard</h1>
+          <p className="text-sm font-medium text-slate-500 mt-2">Sign in to manage your bot</p>
         </div>
 
         <form onSubmit={handleLogin} className="flex flex-col gap-5">
@@ -72,7 +72,7 @@ export default function Login() {
           </button>
         </form>
 
-        <p className="text-center text-xs text-slate-400 mt-6">
+        <p className="text-center text-xs text-slate-500 mt-6">
           X AI Chatbot Admin · Secured access
         </p>
       </div>

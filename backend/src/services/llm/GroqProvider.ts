@@ -2,27 +2,24 @@ import Groq from 'groq-sdk';
 import { LLMMessage, LLMOptions, LLMProvider, LLMResponse } from './LLMProvider';
 import { env } from '../../config/env';
 import { logger } from '../../utils/logger';
+import { getSettings } from '../../models/BotSettings';
 
 export class GroqProvider implements LLMProvider {
   readonly name = 'groq';
   readonly defaultModel = 'openai/gpt-oss-120b';
-  private client: Groq | null = null;
-
-  constructor() {
-    if (env.GROQ_API_KEY) {
-      this.client = new Groq({ apiKey: env.GROQ_API_KEY });
-    }
-  }
 
   isAvailable(): boolean {
-    return !!env.GROQ_API_KEY && !!this.client;
+    return true; 
   }
 
   async generateResponse(messages: LLMMessage[], opts: LLMOptions = {}): Promise<LLMResponse> {
-    if (!this.client) throw new Error('Groq API key not configured');
+    const settings = await getSettings();
+    const key = settings.groqKey || env.GROQ_API_KEY;
+    if (!key) throw new Error('Groq API key not configured in dashboard or env');
+    const client = new Groq({ apiKey: key });
 
     const modelName = opts.model || this.defaultModel;
-    const completion = await this.client.chat.completions.create({
+    const completion = await client.chat.completions.create({
       model: modelName,
       messages: messages.map((m) => ({ role: m.role as 'user' | 'assistant' | 'system', content: m.content })),
       temperature: opts.temperature ?? 0.7,

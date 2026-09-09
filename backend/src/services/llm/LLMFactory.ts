@@ -17,9 +17,7 @@ export function getLLMProvider(providerName: string): LLMProvider {
 }
 
 export function getAvailableProviders(): string[] {
-  return Object.entries(providerInstances)
-    .filter(([, p]) => p.isAvailable())
-    .map(([name]) => name);
+  return Object.keys(providerInstances);
 }
 
 export { LLMProvider };

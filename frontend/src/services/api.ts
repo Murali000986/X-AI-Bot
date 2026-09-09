@@ -39,12 +39,29 @@ export const api = {
   getUserConversations: (id: string) => request<Conversation[]>(`/users/${id}/conversations`),
 
   // Conversations
-  getConversations: (page = 1) => request<ConversationList>(`/conversations?page=${page}`),
+  getConversations: (page = 1, search = '', agent = '') =>
+    request<ConversationList>(`/conversations?page=${page}&search=${encodeURIComponent(search)}&agent=${encodeURIComponent(agent)}`),
   getConversation: (id: string) => request<ConversationDetail>(`/conversations/${id}`),
   getMessages: (page = 1) => request<MessageList>(`/messages?page=${page}`),
 
   // Analytics
   getAnalytics: (days = 7) => request<Analytics>(`/analytics?days=${days}`),
+
+  // LLM Requests
+  getRequests: (params: { page?: number; limit?: number; model?: string; agent?: string; from?: string; to?: string } = {}) => {
+    const q = new URLSearchParams();
+    if (params.page)  q.set('page',  String(params.page));
+    if (params.limit) q.set('limit', String(params.limit));
+    if (params.model) q.set('model', params.model);
+    if (params.agent) q.set('agent', params.agent);
+    if (params.from)  q.set('from',  params.from);
+    if (params.to)    q.set('to',    params.to);
+    return request<RequestLog>(`/requests?${q.toString()}`);
+  },
+  getRequestStats: () => request<RequestStats>('/requests/stats'),
+
+  // Health
+  getHealth: () => request<HealthStatus>('/health'),
 
   // Settings
   getSettings: () => request<BotSettings>('/settings'),
@@ -62,10 +79,8 @@ export const api = {
   // Test
   testAgent: (data: TestAgentRequest) =>
     request<TestAgentResponse>('/test-agent', { method: 'POST', body: JSON.stringify(data) }),
-
-  // Health
-  health: () => request<{ status: string; timestamp: string }>('/health'),
 };
+
 
 // ---- Types ----
 export interface DashboardStats {
@@ -75,6 +90,7 @@ export interface DashboardStats {
   activeUsers: number;
   totalTokens: number;
   llmRequests: number;
+  totalCostUSD: number;
 }
 
 export interface User {
@@ -153,3 +169,38 @@ export interface Analytics {
 
 export interface TestAgentRequest { message: string; agentKey?: string; provider?: string; model?: string; }
 export interface TestAgentResponse { content: string; agent: string; model: string; provider: string; tokenUsage: { prompt: number; completion: number; total: number }; }
+
+export interface RequestItem {
+  _id: string;
+  createdAt: string;
+  userId: UserRef | null;
+  agent?: string;
+  model?: string;
+  tweetId?: string;
+  tokenUsage: { prompt: number; completion: number; total: number };
+  costUSD: number;
+  content: string;
+}
+export interface RequestLog { requests: RequestItem[]; total: number; page: number; pages: number; }
+
+export interface RequestModelStat {
+  model: string;
+  count: number;
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+  costUSD: number;
+}
+export interface RequestStats {
+  byModel: RequestModelStat[];
+  totals: { count: number; tokens: number; costUSD: number };
+}
+
+export interface HealthStatus {
+  status: 'healthy' | 'degraded';
+  timestamp: string;
+  uptime: number;
+  services: { database: string; redis: string };
+  memory: { rss: number; heapUsed: number; heapTotal: number };
+}
+

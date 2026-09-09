@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { api, ModelsResponse } from '../services/api';
 import { useToast } from '../components/Toast';
 import { CheckCircle2, XCircle } from 'lucide-react';
@@ -16,8 +16,8 @@ export default function Models() {
   return (
     <div className="p-8 max-w-5xl mx-auto animate-in fade-in">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-100">LLM Models</h1>
-        <p className="text-sm text-gray-500 mt-1">Available providers and model capabilities.</p>
+        <h1 className="text-2xl font-bold text-slate-900">LLM Models</h1>
+        <p className="text-sm text-slate-500 mt-1">Available providers and model capabilities.</p>
       </div>
 
       <div className="grid gap-6">
@@ -25,8 +25,8 @@ export default function Models() {
           const isConfigured = data.availableProviders.includes(provider);
           return (
             <div key={provider} className="card">
-              <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-800">
-                <h2 className="text-lg font-semibold text-gray-100 capitalize">{provider}</h2>
+              <div className="flex items-center justify-between mb-4 pb-4 border-b border-slate-200">
+                <h2 className="text-lg font-semibold text-slate-900 capitalize">{provider}</h2>
                 {isConfigured ? (
                   <span className="badge-green flex items-center gap-1 px-3 py-1"><CheckCircle2 size={14} /> Configured</span>
                 ) : (
@@ -36,7 +36,7 @@ export default function Models() {
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 {models.map((model) => (
-                  <div key={model} className="px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm text-gray-300">
+                  <div key={model} className="px-3 py-2 rounded-lg bg-slate-100 border border-slate-200 text-sm text-slate-600">
                     {model}
                   </div>
                 ))}

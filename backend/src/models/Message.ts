@@ -6,7 +6,7 @@ export interface ITokenUsage {
   total: number;
 }
 
-export interface IMessage extends Document {
+export interface IMessage {
   conversationId: mongoose.Types.ObjectId;
   userId: mongoose.Types.ObjectId;
   role: 'user' | 'assistant';

@@ -2,27 +2,24 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { LLMMessage, LLMOptions, LLMProvider, LLMResponse } from './LLMProvider';
 import { env } from '../../config/env';
 import { logger } from '../../utils/logger';
+import { getSettings } from '../../models/BotSettings';
 
 export class GeminiProvider implements LLMProvider {
   readonly name = 'gemini';
   readonly defaultModel = 'gemini-1.5-flash';
-  private client: GoogleGenerativeAI | null = null;
-
-  constructor() {
-    if (env.GEMINI_API_KEY) {
-      this.client = new GoogleGenerativeAI(env.GEMINI_API_KEY);
-    }
-  }
 
   isAvailable(): boolean {
-    return !!env.GEMINI_API_KEY && !!this.client;
+    return true; // We check at runtime now
   }
 
   async generateResponse(messages: LLMMessage[], opts: LLMOptions = {}): Promise<LLMResponse> {
-    if (!this.client) throw new Error('Gemini API key not configured');
+    const settings = await getSettings();
+    const key = settings.geminiKey || env.GEMINI_API_KEY;
+    if (!key) throw new Error('Gemini API key not configured in dashboard or env');
+    const client = new GoogleGenerativeAI(key);
 
     const modelName = opts.model || this.defaultModel;
-    const model = this.client.getGenerativeModel({
+    const model = client.getGenerativeModel({
       model: modelName,
       generationConfig: {
         temperature: opts.temperature ?? 0.7,
@@ -36,7 +33,7 @@ export class GeminiProvider implements LLMProvider {
 
     const systemInstruction = systemMsg?.content;
     const modelWithSystem = systemInstruction
-      ? this.client.getGenerativeModel({ model: modelName, systemInstruction, generationConfig: { temperature: opts.temperature ?? 0.7, maxOutputTokens: opts.maxTokens ?? 1024 } })
+      ? client.getGenerativeModel({ model: modelName, systemInstruction, generationConfig: { temperature: opts.temperature ?? 0.7, maxOutputTokens: opts.maxTokens ?? 1024 } })
       : model;
 
     // Convert to Gemini history format

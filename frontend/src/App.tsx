@@ -13,6 +13,8 @@ import Agents from './pages/Agents';
 import Models from './pages/Models';
 import Settings from './pages/Settings';
 import Analytics from './pages/Analytics';
+import Requests from './pages/Requests';
+import Health from './pages/Health';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -22,7 +24,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50">
+    <div className="flex h-screen overflow-hidden bg-slate-50 text-slate-900 font-sans">
       <Sidebar />
       <main className="flex-1 overflow-y-auto">
         {children}
@@ -40,13 +42,15 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             
             {/* Protected Dashboard Routes */}
-            <Route path="/" element={<ProtectedRoute><Layout><Overview /></Layout></ProtectedRoute>} />
-            <Route path="/users" element={<ProtectedRoute><Layout><Users /></Layout></ProtectedRoute>} />
+            <Route path="/"              element={<ProtectedRoute><Layout><Overview      /></Layout></ProtectedRoute>} />
+            <Route path="/users"         element={<ProtectedRoute><Layout><Users         /></Layout></ProtectedRoute>} />
             <Route path="/conversations" element={<ProtectedRoute><Layout><Conversations /></Layout></ProtectedRoute>} />
-            <Route path="/agents" element={<ProtectedRoute><Layout><Agents /></Layout></ProtectedRoute>} />
-            <Route path="/models" element={<ProtectedRoute><Layout><Models /></Layout></ProtectedRoute>} />
-            <Route path="/settings" element={<ProtectedRoute><Layout><Settings /></Layout></ProtectedRoute>} />
-            <Route path="/analytics" element={<ProtectedRoute><Layout><Analytics /></Layout></ProtectedRoute>} />
+            <Route path="/agents"        element={<ProtectedRoute><Layout><Agents        /></Layout></ProtectedRoute>} />
+            <Route path="/models"        element={<ProtectedRoute><Layout><Models        /></Layout></ProtectedRoute>} />
+            <Route path="/settings"      element={<ProtectedRoute><Layout><Settings      /></Layout></ProtectedRoute>} />
+            <Route path="/analytics"     element={<ProtectedRoute><Layout><Analytics     /></Layout></ProtectedRoute>} />
+            <Route path="/requests"      element={<ProtectedRoute><Layout><Requests      /></Layout></ProtectedRoute>} />
+            <Route path="/health"        element={<ProtectedRoute><Layout><Health        /></Layout></ProtectedRoute>} />
             
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
@@ -55,3 +59,4 @@ export default function App() {
     </ToastProvider>
   );
 }
+
