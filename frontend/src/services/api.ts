@@ -32,6 +32,7 @@ export const api = {
 
   // Dashboard
   getStats: () => request<DashboardStats>('/dashboard/stats'),
+  getXProfile: () => request<XProfile>('/dashboard/x-profile'),
 
   // Users
   getUsers: (page = 1) => request<UserList>(`/users?page=${page}`),
@@ -85,6 +86,16 @@ export const api = {
 
 
 // ---- Types ----
+export interface XProfile {
+  id: string;
+  username: string;
+  displayName: string;
+  profileImage?: string;
+  followersCount?: number;
+  followingCount?: number;
+  tweetCount?: number;
+}
+
 export interface DashboardStats {
   totalUsers: number;
   totalMessages: number;

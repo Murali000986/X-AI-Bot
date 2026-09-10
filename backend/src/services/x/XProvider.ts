@@ -13,11 +13,15 @@ export interface XUser {
   username: string;
   displayName: string;
   profileImage?: string;
+  followersCount?: number;
+  followingCount?: number;
+  tweetCount?: number;
 }
 
 export interface XProvider {
   getMentions(sinceId?: string): Promise<Tweet[]>;
   replyToTweet(tweetId: string, text: string): Promise<string>; // returns new tweet ID
   getUser(userId: string): Promise<XUser>;
+  getMe(): Promise<XUser>;
   authenticate(): Promise<void>;
 }

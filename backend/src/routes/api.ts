@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { authMiddleware } from '../middleware/auth';
-import { getStats } from '../controllers/dashboardController';
+import { getStats, getXProfile } from '../controllers/dashboardController';
 import { getUsers, getUser, blockUser, unblockUser, getUserConversations } from '../controllers/usersController';
 import { getConversations, getConversation, getMessages } from '../controllers/conversationsController';
 import { getAnalytics } from '../controllers/analyticsController';
@@ -22,6 +22,7 @@ router.use(authMiddleware);
 
 // Dashboard
 router.get('/dashboard/stats', getStats);
+router.get('/dashboard/x-profile', getXProfile);
 
 // Users
 router.get('/users', getUsers);

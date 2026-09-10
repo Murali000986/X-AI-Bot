@@ -94,4 +94,25 @@ export class XApiProvider implements XProvider {
       profileImage: (user.data as any).profile_image_url,
     };
   }
+
+  async getMe(): Promise<XUser> {
+    try {
+      const { readClient } = await this.getClients();
+      const me = await readClient.v2.me({
+        'user.fields': ['profile_image_url', 'public_metrics']
+      });
+      return {
+        id: me.data.id,
+        username: me.data.username,
+        displayName: me.data.name,
+        profileImage: (me.data as any).profile_image_url,
+        followersCount: (me.data as any).public_metrics?.followers_count,
+        followingCount: (me.data as any).public_metrics?.following_count,
+        tweetCount: (me.data as any).public_metrics?.tweet_count,
+      };
+    } catch (err) {
+      logger.error('getMe failed:', err);
+      throw err;
+    }
+  }
 }

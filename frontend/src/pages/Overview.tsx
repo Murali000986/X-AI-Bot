@@ -1,9 +1,19 @@
+import { useEffect, useState } from 'react';
 import { Search, Mail, User } from 'lucide-react';
 import PageShell from '../components/PageShell';
 import { useNavigate } from 'react-router-dom';
+import { api, XProfile, DashboardStats } from '../services/api';
 
 export default function Overview() {
   const navigate = useNavigate();
+  const [profile, setProfile] = useState<XProfile | null>(null);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  
+  useEffect(() => {
+    // Attempt to load X profile and local DB stats
+    api.getXProfile().then(setProfile).catch(() => {});
+    api.getStats().then(setStats).catch(() => {});
+  }, []);
 
   return (
     <PageShell>
@@ -14,12 +24,16 @@ export default function Overview() {
           <div className="p-6 flex items-center justify-between border-b border-slate-100">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-full bg-slate-200 overflow-hidden flex items-start justify-center">
-                <img src={`https://api.dicebear.com/7.x/notionists/svg?seed=Admin`} alt="avatar" className="w-full h-full object-cover" />
+                {profile?.profileImage ? (
+                  <img src={profile.profileImage} alt="avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <img src={`https://api.dicebear.com/7.x/notionists/svg?seed=Admin`} alt="avatar" className="w-full h-full object-cover" />
+                )}
               </div>
               <div>
                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Connected Account</div>
-                <div className="text-xl font-bold text-slate-800">AdminUser</div>
-                <div className="text-[13px] text-slate-500">@admin_bot</div>
+                <div className="text-xl font-bold text-slate-800">{profile?.displayName || 'Admin'}</div>
+                <div className="text-[13px] text-slate-500">@{profile?.username || 'admin_bot'}</div>
               </div>
             </div>
             <button className="px-4 py-1.5 rounded-full border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
@@ -29,15 +43,15 @@ export default function Overview() {
 
           <div className="flex">
             <div className="flex-1 py-6 flex flex-col items-center justify-center border-r border-slate-100">
-              <div className="text-2xl font-bold text-slate-800">3,492</div>
+              <div className="text-2xl font-bold text-slate-800">{profile?.followersCount?.toLocaleString() || stats?.activeUsers || 0}</div>
               <div className="text-[13px] font-medium text-slate-400">Followers</div>
             </div>
             <div className="flex-1 py-6 flex flex-col items-center justify-center border-r border-slate-100">
-              <div className="text-2xl font-bold text-slate-800">28</div>
+              <div className="text-2xl font-bold text-slate-800">{profile?.followingCount?.toLocaleString() || 0}</div>
               <div className="text-[13px] font-medium text-slate-400">Following</div>
             </div>
             <div className="flex-1 py-6 flex flex-col items-center justify-center">
-              <div className="text-2xl font-bold text-slate-800">924</div>
+              <div className="text-2xl font-bold text-slate-800">{profile?.tweetCount?.toLocaleString() || stats?.totalMessages || 0}</div>
               <div className="text-[13px] font-medium text-slate-400">Posts</div>
             </div>
           </div>

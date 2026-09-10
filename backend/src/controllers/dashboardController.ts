@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { User } from '../models/User';
 import { Message } from '../models/Message';
+import { XApiProvider } from '../services/x/XApiProvider';
 
 const COST_TABLE: Record<string, { prompt: number; completion: number }> = {
   'gpt-4o':           { prompt: 5,     completion: 15 },
@@ -59,5 +60,15 @@ export async function getStats(_req: Request, res: Response): Promise<void> {
       totalUsers: 0, totalMessages: 0, messagesToday: 0,
       activeUsers: 0, totalTokens: 0, llmRequests: 0, totalCostUSD: 0,
     });
+  }
+}
+
+export async function getXProfile(_req: Request, res: Response): Promise<void> {
+  try {
+    const provider = new XApiProvider();
+    const me = await provider.getMe();
+    res.json(me);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch X Profile. Ensure API keys are set and valid.', details: String(err) });
   }
 }
