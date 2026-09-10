@@ -64,7 +64,8 @@ export async function updateSettings(req: Request, res: Response): Promise<void>
       if (obj[key]) obj[key] = obj[key].substring(0, 3) + '••••••••';
     }
     res.json(obj);
-  } catch {
-    res.status(503).json({ error: 'Database unavailable' });
+  } catch (err: unknown) {
+    console.error('Failed to update Settings:', err);
+    res.status(500).json({ error: 'Failed to update settings', details: String(err) });
   }
 }

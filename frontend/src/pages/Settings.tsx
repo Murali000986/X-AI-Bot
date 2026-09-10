@@ -65,8 +65,9 @@ export default function Settings() {
       setSavedOk(section);
       toast('Saved successfully', 'success');
       setTimeout(() => setSavedOk(null), 2000);
-    } catch {
-      toast('Failed to save', 'error');
+    } catch (err: any) {
+      const msg = err.message || String(err);
+      toast(`Failed to save: ${msg}`, 'error');
     } finally {
       setSaving(null);
     }
