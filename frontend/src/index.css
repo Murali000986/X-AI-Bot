@@ -5,45 +5,41 @@
 
 @layer base {
   :root {
-    --sidebar-width: 240px;
+    --sidebar-width: 260px;
   }
 
   body {
-    @apply bg-slate-50 text-slate-800 font-sans antialiased;
-  }
-
-  * {
-    @apply border-slate-200;
+    @apply bg-[#f8f9fc] text-slate-800 font-sans antialiased;
   }
 }
 
 @layer components {
   .card {
-    @apply bg-white border border-slate-200/60 rounded-2xl p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] relative overflow-hidden;
+    @apply bg-white border border-slate-100 rounded-3xl p-6 shadow-sm overflow-hidden;
   }
 
   .btn-primary {
-    @apply inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex justify-center items-center gap-2 px-5 py-2.5 rounded-full bg-[#829bed] hover:bg-[#728be0] text-white font-semibold text-sm transition-all shadow-sm focus:ring-4 focus:ring-indigo-100 disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply inline-flex justify-center items-center gap-2 px-5 py-2.5 rounded-full bg-[#f0f2fb] hover:bg-[#e4e8f7] text-[#6b7cbe] font-semibold text-sm transition-all;
   }
 
   .btn-ghost {
-    @apply inline-flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-slate-100 text-slate-500 hover:text-slate-900 font-semibold text-sm transition-colors;
+    @apply inline-flex justify-center items-center gap-2 px-3 py-2 rounded-xl hover:bg-slate-50 text-slate-500 hover:text-slate-900 font-semibold text-sm transition-colors;
   }
 
   .btn-danger {
     @apply inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-semibold text-sm transition-colors;
   }
 
-  .stat-card {
-    @apply card flex flex-col gap-1 hover:border-slate-300 hover:shadow-md transition-all;
-  }
-
   .input {
-    @apply w-full px-3 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:ring-4 focus:ring-brand-500/20 focus:border-brand-500 transition-all shadow-sm;
+    @apply w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-300 transition-all;
   }
 
   .label {
-    @apply block text-xs font-bold text-slate-500 mb-1.5 tracking-wide uppercase;
+    @apply block text-sm font-semibold text-slate-600 mb-2;
   }
 
   .badge {
@@ -52,37 +48,11 @@
 
   .badge-green { @apply badge bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200; }
   .badge-red { @apply badge bg-rose-50 text-rose-600 ring-1 ring-rose-200; }
-  .badge-blue { @apply badge bg-sky-50 text-sky-600 ring-1 ring-sky-200; }
-  .badge-yellow { @apply badge bg-amber-50 text-amber-600 ring-1 ring-amber-200; }
-  .badge-purple { @apply badge bg-purple-50 text-purple-600 ring-1 ring-purple-200; }
-  .badge-gray { @apply badge bg-slate-100 text-slate-600 ring-1 ring-slate-200; }
-
-  /* Page header */
-  .page-header h1 {
-    @apply text-2xl font-bold text-slate-900 tracking-tight;
-  }
-  .page-header p {
-    @apply text-sm text-slate-500 mt-1;
-  }
+  .badge-blue { @apply badge bg-[#f0f2fb] text-[#6b7cbe] ring-1 ring-indigo-200; }
 }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { @apply bg-transparent; }
-::-webkit-scrollbar-thumb { @apply bg-slate-300 rounded-full; }
-::-webkit-scrollbar-thumb:hover { @apply bg-slate-400; }
-
-/* Recharts light theme */
-.recharts-cartesian-grid-horizontal line,
-.recharts-cartesian-grid-vertical line {
-  stroke: #e2e8f0 !important;
-}
-.recharts-text { fill: #64748b !important; }
-.recharts-tooltip-wrapper .recharts-default-tooltip {
-  background: rgba(255, 255, 255, 0.95) !important;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 12px !important;
-  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1) !important;
-  backdrop-filter: blur(8px);
-  color: #0f172a !important;
-}
+::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
+::-webkit-scrollbar-thumb:hover { @apply bg-slate-300; }

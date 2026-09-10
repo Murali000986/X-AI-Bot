@@ -1,1 +1,7 @@
-src/pages/Agents.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/Sidebar.tsx(40,42): error TS2304: Cannot find name 'isActive'.
+src/pages/Analytics.tsx(32,7): error TS2322: Type '{ children: Element; actions: Element; }' is not assignable to type 'IntrinsicAttributes & Props'.
+  Property 'actions' does not exist on type 'IntrinsicAttributes & Props'.
+src/pages/Health.tsx(73,7): error TS2322: Type '{ children: Element; onRefresh: () => Promise<void>; actions: Element; }' is not assignable to type 'IntrinsicAttributes & Props'.
+  Property 'onRefresh' does not exist on type 'IntrinsicAttributes & Props'.
+src/pages/Overview.tsx(1,10): error TS6133: 'Settings' is declared but its value is never read.
+src/pages/Settings.tsx(5,10): error TS6133: 'loading' is declared but its value is never read.
