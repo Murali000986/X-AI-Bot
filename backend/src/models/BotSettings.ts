@@ -58,6 +58,16 @@ export const BotSettings = mongoose.model<IBotSettings>('BotSettings', BotSettin
 
 /** Returns the single settings doc, creating it with defaults if it doesn't exist. */
 export async function getSettings(): Promise<IBotSettings> {
+  // If Mongoose lost or never established its connection, reconnect now.
+  // readyState: 0=disconnected, 1=connected, 2=connecting, 3=disconnecting
+  if (mongoose.connection.readyState === 0) {
+    const { env } = await import('../config/env');
+    await mongoose.connect(env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 15000,
+      socketTimeoutMS: 45000,
+    });
+  }
+
   let settings = await BotSettings.findOne();
   if (!settings) {
     settings = await BotSettings.create({});
