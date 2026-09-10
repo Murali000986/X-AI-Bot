@@ -13,7 +13,13 @@ export function createApp() {
   // Security
   app.use(helmet());
   app.use(cors({
-    origin: env.FRONTEND_URL,
+    origin: (origin, cb) => {
+      // Allow: same origin, configured frontend, any vercel.app subdomain
+      if (!origin || origin === env.FRONTEND_URL || origin.endsWith('.vercel.app')) {
+        return cb(null, true);
+      }
+      cb(new Error(`CORS blocked: ${origin}`));
+    },
     credentials: true,
   }));
 
